@@ -1,0 +1,11 @@
+{
+  "name": "purescript-fastify",
+  "description": "PureScript bindings for fastify.",
+  "repository": "git@github.com:PureFunctor/purescript-fastify.git",
+  "author": "PureFunctor <purefunctor@gmail.com>",
+  "license": "BSD-3-Clause",
+  "private": true,
+  "dependencies": {
+    "fastify": "^3.14.2"
+  }
+}
