@@ -1,6 +1,7 @@
 { name = "fastify"
 , dependencies =
-  [ "console"
+  [ "aff"
+  , "console"
   , "effect"
   , "foreign"
   , "foreign-object"
