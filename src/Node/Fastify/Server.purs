@@ -1,9 +1,7 @@
 module Node.Fastify.Server where
 
 import Effect (Effect)
-
--- | Represents a `fastify` server.
-foreign import data Server :: Type
+import Node.Fastify.Types (Server)
 
 -- | Represents options to be passed to the `fastify` server factory.
 -- |

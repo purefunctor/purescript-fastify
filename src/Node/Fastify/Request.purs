@@ -3,9 +3,7 @@ module Node.Fastify.Request where
 import Effect (Effect)
 import Foreign (Foreign)
 import Foreign.Object (Object)
-
--- | Represents a `fastify` request.
-foreign import data Request :: Type
+import Node.Fastify.Types (Request)
 
 foreign import _getBody :: Request -> Effect ( Object Foreign )
 
