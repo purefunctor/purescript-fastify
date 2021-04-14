@@ -6,10 +6,10 @@ import Effect (Effect)
 import Effect.Aff (Aff, runAff_)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
-import Node.Fastify.Types (Reply, Request)
+import Node.Fastify.Types (FastifyReply, FastifyRequest)
 
 -- | Monad used for handling requests.
-newtype HandlerM r = HandlerM ( Request -> Reply -> Aff r )
+newtype HandlerM r = HandlerM ( FastifyRequest -> FastifyReply -> Aff r )
 
 type Handler = HandlerM Unit
 
@@ -38,5 +38,5 @@ instance monadEffectHandlerM :: MonadEffect HandlerM where
 instance monadAffHandlerM :: MonadAff HandlerM where
   liftAff h = HandlerM \_ _ -> h
 
-runHandler :: Handler -> ( Request -> Reply -> Effect Unit )
+runHandler :: Handler -> ( FastifyRequest -> FastifyReply -> Effect Unit )
 runHandler ( HandlerM h ) req res = runAff_ (\_ -> pure unit) ( h req res )

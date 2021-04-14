@@ -1,7 +1,7 @@
 module Node.Fastify.Server where
 
 import Effect (Effect)
-import Node.Fastify.Types (Server)
+import Node.Fastify.Types (FastifyServer)
 
 -- | Represents options to be passed to the `fastify` server factory.
 -- |
@@ -78,12 +78,12 @@ defaultServerOptions = ServerOptions
   -- , rewriteUrl: unit
   }
 
-foreign import _mkServer :: ServerOptions -> Effect Server
+foreign import _mkServer :: ServerOptions -> Effect FastifyServer
 
--- | Creates a `Server` given `ServerOptions`.
-mkServerWithOptions :: ServerOptions -> Effect Server
+-- | Creates a `FastifyServer` given `ServerOptions`.
+mkServerWithOptions :: ServerOptions -> Effect FastifyServer
 mkServerWithOptions = _mkServer
 
--- | Creates a `Server` with `defaultServerOptions`.
-mkServer :: Effect Server
+-- | Creates a `FastifyServer` with `defaultServerOptions`.
+mkServer :: Effect FastifyServer
 mkServer = mkServerWithOptions defaultServerOptions

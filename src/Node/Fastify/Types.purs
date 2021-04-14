@@ -1,10 +1,10 @@
 module Node.Fastify.Types where
 
 -- | Represents a `fastify` server.
-foreign import data Server :: Type
+foreign import data FastifyServer :: Type
 
 -- | Represents a `fastify` request.
-foreign import data Request :: Type
+foreign import data FastifyRequest :: Type
 
 -- | Represents a `fastify` reply.
-foreign import data Reply :: Type
+foreign import data FastifyReply :: Type
