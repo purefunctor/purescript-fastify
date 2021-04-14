@@ -16,6 +16,8 @@ foreign import data FastifyReply :: Type
 -- | Represents a handler in PureScript
 type HandlerFn = ( FastifyRequest -> FastifyReply -> Effect Unit )
 
+type Port = Int
+
 -- | Represents HTTP methods.
 data HttpMethod
   = GET

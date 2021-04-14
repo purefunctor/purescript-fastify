@@ -3,11 +3,11 @@ module Node.Fastify.Server where
 import Prelude
 
 import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
-import Data.Nullable (Nullable, null)
+import Data.Nullable (Nullable, notNull, null)
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Node.Fastify.Handler (Handler, runHandler)
-import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..))
+import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..), Port)
 
 -- | Represents options to be passed to the `https` field.
 type HttpsOptions =
@@ -185,9 +185,19 @@ all = http ALL
 
 foreign import _listen :: Fn2 FastifyServer Int ( Effect Unit )
 
--- | Runs a `Server` on a given port
-listen :: Server -> Int -> Effect Unit
-listen ( ServerM m ) p = do
-  s <- mkServer
-  m s
-  runFn2 _listen s p
+-- | Runs a `Server` on a `Port` given `ServerOptions`.
+listenWithOptions :: ServerOptions -> Server -> Port -> Effect Unit
+listenWithOptions options ( ServerM m ) port = do
+  server <- mkServerWithOptions options
+  m server
+  runFn2 _listen server port
+
+-- | Runs a `Server` on a `Port` using `defaultServerOptions`.
+listen :: Server -> Port -> Effect Unit
+listen = listenWithOptions defaultServerOptions
+
+-- | Runs a `Server` on a `Port` with HTTPS given `HttpsOptions`.
+listenHttps :: HttpsOptions -> Server -> Port -> Effect Unit
+listenHttps https server port =
+  let options = defaultServerOptions { https = notNull https }
+   in listenWithOptions options server port
