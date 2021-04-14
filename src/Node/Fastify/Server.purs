@@ -1,6 +1,9 @@
 module Node.Fastify.Server where
 
+import Prelude
+
 import Effect (Effect)
+import Effect.Class (class MonadEffect)
 import Node.Fastify.Types (FastifyServer)
 
 -- | Represents options to be passed to the `fastify` server factory.
@@ -87,3 +90,32 @@ mkServerWithOptions = _mkServer
 -- | Creates a `FastifyServer` with `defaultServerOptions`.
 mkServer :: Effect FastifyServer
 mkServer = mkServerWithOptions defaultServerOptions
+
+-- | Monad for operating on a `FastifyServer`.
+newtype ServerM r = ServerM (FastifyServer -> Effect r)
+
+type Server = ServerM Unit
+
+runServer :: FastifyServer -> Server -> Effect Unit
+runServer s ( ServerM m ) = m s
+
+instance functorServerM :: Functor ServerM where
+  map f ( ServerM m ) = ServerM \s -> f <$> m s
+
+instance applyServerM :: Apply ServerM where
+  apply ( ServerM f ) ( ServerM m ) = ServerM \s -> do
+    f' <- f s
+    m' <- m s
+    pure $ f' m'
+
+instance applicativeServerM :: Applicative ServerM where
+  pure r = ServerM \_ -> pure r
+
+instance bindServerM :: Bind ServerM where
+  bind ( ServerM m ) f = ServerM \s ->
+    f <$> m s >>= \(ServerM n) -> n s
+
+instance monadServerM :: Monad ServerM
+
+instance monadEffectServerM :: MonadEffect ServerM where
+  liftEffect m = ServerM \_ -> m
