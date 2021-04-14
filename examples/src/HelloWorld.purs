@@ -10,8 +10,8 @@ import Node.Fastify.Server (Server, get, listen)
 server :: Server
 server = do
   get "/" do
-    void $ type_ "text/html"
-    void $ send "Hello, World!"
+    type_ "text/html"
+    send "Hello, World!"
 
 main :: Effect Unit
 main = do

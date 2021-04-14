@@ -7,30 +7,30 @@ import Effect (Effect)
 import Effect.Class (liftEffect)
 import Foreign (Foreign)
 import Foreign.Object (Object)
-import Node.Fastify.Handler (HandlerM(..))
+import Node.Fastify.Handler (HandlerM(..), Handler)
 import Node.Fastify.Types (FastifyReply, FastifyRequest)
 
-foreign import _code :: Fn2 FastifyReply Number ( Effect FastifyReply )
+foreign import _code :: Fn2 FastifyReply Number ( Effect Unit )
 
-code :: Number -> HandlerM FastifyReply
+code :: Number -> Handler
 code statusCode = HandlerM \_ reply ->
   liftEffect $ runFn2 _code reply statusCode
 
-foreign import _status :: Fn2 FastifyReply Number ( Effect FastifyReply )
+foreign import _status :: Fn2 FastifyReply Number ( Effect Unit )
 
-status :: Number -> HandlerM FastifyReply
+status :: Number -> Handler
 status statusCode = HandlerM \_ reply ->
   liftEffect $ runFn2 _status reply statusCode
 
-foreign import _header :: Fn3 FastifyReply String String ( Effect FastifyReply )
+foreign import _header :: Fn3 FastifyReply String String ( Effect Unit )
 
-header :: String -> String -> HandlerM FastifyReply
+header :: String -> String -> Handler
 header name value = HandlerM \_ reply ->
   liftEffect $ runFn3 _header reply name value
 
-foreign import _headers :: Fn2 FastifyReply ( Object Foreign ) ( Effect FastifyReply )
+foreign import _headers :: Fn2 FastifyReply ( Object Foreign ) ( Effect Unit )
 
-headers :: Object Foreign -> HandlerM FastifyReply
+headers :: Object Foreign -> Handler
 headers values = HandlerM \_ reply ->
   liftEffect $ runFn2 _headers reply values
 
@@ -58,27 +58,27 @@ hasHeader :: String -> HandlerM Boolean
 hasHeader name = HandlerM \_ reply ->
   liftEffect $ runFn2 _hasHeader reply name
 
-foreign import _type :: Fn2 FastifyReply String ( Effect FastifyReply )
+foreign import _type :: Fn2 FastifyReply String ( Effect Unit )
 
-type_ :: String -> HandlerM FastifyReply
+type_ :: String -> Handler
 type_ value = HandlerM \_ reply ->
   liftEffect $ runFn2 _type reply value
 
-foreign import _redirect :: Fn2 FastifyReply String ( Effect FastifyReply )
+foreign import _redirect :: Fn2 FastifyReply String ( Effect Unit )
 
-redirect :: String -> HandlerM FastifyReply
+redirect :: String -> Handler
 redirect dest = HandlerM \_ reply ->
   liftEffect $ runFn2 _redirect reply dest
 
-foreign import _redirectWithCode :: Fn3 FastifyReply Number String ( Effect FastifyReply )
+foreign import _redirectWithCode :: Fn3 FastifyReply Number String ( Effect Unit )
 
-redirectWithCode :: Number -> String -> HandlerM FastifyReply
+redirectWithCode :: Number -> String -> Handler
 redirectWithCode statusCode dest = HandlerM \_ reply ->
   liftEffect $ runFn3 _redirectWithCode reply statusCode dest
 
-foreign import _send :: Fn2 FastifyReply String ( Effect FastifyReply )
+foreign import _send :: Fn2 FastifyReply String ( Effect Unit )
 
-send :: String -> HandlerM FastifyReply
+send :: String -> Handler
 send payload = HandlerM \_ rep ->
   liftEffect $ runFn2 _send rep payload
 
