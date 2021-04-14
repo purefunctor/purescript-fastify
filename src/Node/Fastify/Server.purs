@@ -81,5 +81,9 @@ defaultServerOptions = ServerOptions
 foreign import _mkServer :: ServerOptions -> Effect Server
 
 -- | Creates a `Server` given `ServerOptions`.
-mkServer :: ServerOptions -> Effect Server
-mkServer = _mkServer
+mkServerWithOptions :: ServerOptions -> Effect Server
+mkServerWithOptions = _mkServer
+
+-- | Creates a `Server` with `defaultServerOptions`.
+mkServer :: Effect Server
+mkServer = mkServerWithOptions defaultServerOptions
