@@ -10,13 +10,13 @@ import Node.Fastify.Handler (Handler, runHandler)
 import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..))
 
 -- | Represents options to be passed to the `https` field.
-newtype HttpsOptions = HttpsOptions
+type HttpsOptions =
   { key :: String
   , cert :: String
   }
 
 -- | Represents options to configure the `ajv` instance used by fastify.
-newtype AjvOptions = AjvOptions
+type AjvOptions =
   { customOptions ::
        { removeAdditional :: Boolean
        , useDefaults :: Boolean
@@ -31,7 +31,7 @@ foreign import data AjvPlugin :: Type
 
 -- | Represents default options for the `ajv` field.
 defaultAjvOptions :: AjvOptions
-defaultAjvOptions = AjvOptions
+defaultAjvOptions =
   { customOptions:
     { removeAdditional: true
     , useDefaults: true
@@ -49,7 +49,7 @@ defaultAjvOptions = AjvOptions
 -- | to support this currently.
 -- |
 -- | Reference: https://github.com/fastify/fastify/blob/v3.14.2/docs/Server.md
-newtype ServerOptions = ServerOptions
+type ServerOptions =
   { http2 :: Boolean
   , https :: Nullable HttpsOptions
   , connectionTimeout :: Number
@@ -87,7 +87,7 @@ newtype ServerOptions = ServerOptions
 -- |
 -- | Reference: https://github.com/fastify/fastify/blob/v3.14.2/docs/Server.md
 defaultServerOptions :: ServerOptions
-defaultServerOptions = ServerOptions
+defaultServerOptions =
   { http2: false
   , https: null
   , connectionTimeout: 0.0
