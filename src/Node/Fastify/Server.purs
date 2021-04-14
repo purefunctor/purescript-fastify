@@ -2,9 +2,11 @@ module Node.Fastify.Server where
 
 import Prelude
 
+import Data.Function.Uncurried (Fn4, runFn4)
 import Effect (Effect)
-import Effect.Class (class MonadEffect)
-import Node.Fastify.Types (FastifyServer)
+import Effect.Class (class MonadEffect, liftEffect)
+import Node.Fastify.Handler (Handler, runHandler)
+import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..))
 
 -- | Represents options to be passed to the `fastify` server factory.
 -- |
@@ -119,3 +121,30 @@ instance monadServerM :: Monad ServerM
 
 instance monadEffectServerM :: MonadEffect ServerM where
   liftEffect m = ServerM \_ -> m
+
+foreign import _http :: Fn4 FastifyServer String String HandlerFn ( Effect Unit )
+
+-- | Binds a handler to a specific route and method.
+http :: HttpMethod -> String -> Handler -> Server
+http method route handler = ServerM \s ->
+  liftEffect $ runFn4 _http s ( show method ) route ( runHandler handler )
+
+-- | Shorthand for `http GET`
+get :: String -> Handler -> Server
+get = http GET
+
+-- | Shorthand for `http POST`
+post :: String -> Handler -> Server
+post = http POST
+
+-- | Shorthand for `http PUT`
+put :: String -> Handler -> Server
+put = http PUT
+
+-- | Shorthand for `http DELETE`
+delete :: String -> Handler -> Server
+delete = http DELETE
+
+-- | Shorthand for `http ALL`
+all :: String -> Handler -> Server
+all = http ALL

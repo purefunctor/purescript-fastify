@@ -7,3 +7,11 @@ exports._mkServer = function(options) {
     return fastify(options);
   };
 };
+
+exports._http = function(server, method, route, handler) {
+  return function () {
+    server[method](route, function(req, rep) {
+      handler(req)(rep)();
+    });
+  };
+};
