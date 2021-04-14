@@ -5,6 +5,7 @@
   , "effect"
   , "foreign"
   , "foreign-object"
+  , "functions"
   , "prelude"
   , "psci-support"
   ]
