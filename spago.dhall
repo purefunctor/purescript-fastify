@@ -6,6 +6,7 @@
   , "foreign"
   , "foreign-object"
   , "functions"
+  , "nullable"
   , "prelude"
   , "psci-support"
   ]

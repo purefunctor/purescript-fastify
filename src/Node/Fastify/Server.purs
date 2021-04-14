@@ -3,10 +3,44 @@ module Node.Fastify.Server where
 import Prelude
 
 import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
+import Data.Nullable (Nullable, null)
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Node.Fastify.Handler (Handler, runHandler)
 import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..))
+
+-- | Represents options to be passed to the `https` field.
+newtype HttpsOptions = HttpsOptions
+  { key :: String
+  , cert :: String
+  }
+
+-- | Represents options to configure the `ajv` instance used by fastify.
+newtype AjvOptions = AjvOptions
+  { customOptions ::
+       { removeAdditional :: Boolean
+       , useDefaults :: Boolean
+       , coerceTypes :: Boolean
+       , allErrors :: Boolean
+       , nullable :: Boolean
+       }
+  , plugins :: Array AjvPlugin
+  }
+
+foreign import data AjvPlugin :: Type
+
+-- | Represents default options for the `ajv` field.
+defaultAjvOptions :: AjvOptions
+defaultAjvOptions = AjvOptions
+  { customOptions:
+    { removeAdditional: true
+    , useDefaults: true
+    , coerceTypes: true
+    , allErrors: false
+    , nullable: true
+    }
+  , plugins: []
+  }
 
 -- | Represents options to be passed to the `fastify` server factory.
 -- |
@@ -17,7 +51,7 @@ import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..))
 -- | Reference: https://github.com/fastify/fastify/blob/v3.14.2/docs/Server.md
 newtype ServerOptions = ServerOptions
   { http2 :: Boolean
-  -- , https :: Unit -- TODO
+  , https :: Nullable HttpsOptions
   , connectionTimeout :: Number
   , keepAliveTimeout :: Number
   , ignoreTrailingSlash :: Boolean
@@ -25,24 +59,24 @@ newtype ServerOptions = ServerOptions
   , bodyLimit :: Number
   , onProtoPoisoning :: String
   , onConstructorPoisoning :: String
-  -- , logger :: Unit -- TODO
+  , logger :: Boolean -- TODO
   , disableRequestLogging :: Boolean
   -- , serverFactory :: Unit -- TODO
   , caseSensitive :: Boolean
   , requestIdHeader :: String
   , requestIdLogLabel :: String
   -- , genReqId :: Unit -- TODO
-  -- , trustProxy :: Unit -- TODO
+  , trustProxy :: Boolean -- TODO
   , pluginTimeout :: Number
   -- , querystringParser :: Unit
   , exposeHeadRoutes :: Boolean
   -- , constraints :: Unit -- TODO
   , return503OnClosing :: Boolean
-  -- , ajv :: Unit -- TODO
+  , ajv :: AjvOptions
   , http2SessionTimeout :: Number
   -- , frameworkErrors :: Unit -- TODO
   -- , clientErrorHandler :: Unit -- TODO
-  -- , rewriteUrl :: Unit -- TODO
+  -- , rewriteUrl :: Unit
   }
 
 -- | Provides default server options.
@@ -55,7 +89,7 @@ newtype ServerOptions = ServerOptions
 defaultServerOptions :: ServerOptions
 defaultServerOptions = ServerOptions
   { http2: false
-  -- , https: unit
+  , https: null
   , connectionTimeout: 0.0
   , keepAliveTimeout: 5.0
   , ignoreTrailingSlash: false
@@ -63,20 +97,20 @@ defaultServerOptions = ServerOptions
   , bodyLimit: 1048576.0
   , onProtoPoisoning: "error"
   , onConstructorPoisoning: "ignore"
-  -- , logger: unit
+  , logger: false
   , disableRequestLogging: false
   -- , serverFactory: unit
   , caseSensitive: true
   , requestIdHeader: "request-id"
   , requestIdLogLabel: "reqId"
   -- , genReqId: unit
-  -- , trustProxy: unit
+  , trustProxy: false
   , pluginTimeout: 10000.0
   -- , querystringParser: unit
   , exposeHeadRoutes: false
   -- , constraints: unit
   , return503OnClosing: true
-  -- , ajv: unit
+  , ajv: defaultAjvOptions
   , http2SessionTimeout: 5000.0
   -- , frameworkErrors: unit
   -- , clientErrorHandler: unit
