@@ -2,7 +2,8 @@ module Node.Fastify.Handler where
 
 import Prelude
 
-import Effect.Aff (Aff)
+import Effect (Effect)
+import Effect.Aff (Aff, runAff_)
 import Effect.Aff.Class (class MonadAff)
 import Effect.Class (class MonadEffect, liftEffect)
 import Node.Fastify.Types (Reply, Request)
@@ -37,5 +38,5 @@ instance monadEffectHandlerM :: MonadEffect HandlerM where
 instance monadAffHandlerM :: MonadAff HandlerM where
   liftAff h = HandlerM \_ _ -> h
 
--- runHandler :: Handler -> Request -> Reply -> Effect Unit -> Effect Unit
--- runHandler ( HandlerM h ) req res nxt = undefined
+runHandler :: Handler -> ( Request -> Reply -> Effect Unit )
+runHandler ( HandlerM h ) req res = runAff_ (\_ -> pure unit) ( h req res )
