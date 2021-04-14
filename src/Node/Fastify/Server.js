@@ -15,3 +15,11 @@ exports._http = function(server, method, route, handler) {
     });
   };
 };
+
+exports._listen = function(server, port) {
+  return function () {
+    server.listen(port, function(err, add) {
+
+    });
+  };
+};

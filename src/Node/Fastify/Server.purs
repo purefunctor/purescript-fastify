@@ -2,7 +2,7 @@ module Node.Fastify.Server where
 
 import Prelude
 
-import Data.Function.Uncurried (Fn4, runFn4)
+import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Node.Fastify.Handler (Handler, runHandler)
@@ -148,3 +148,12 @@ delete = http DELETE
 -- | Shorthand for `http ALL`
 all :: String -> Handler -> Server
 all = http ALL
+
+foreign import _listen :: Fn2 FastifyServer Int ( Effect Unit )
+
+-- | Runs a `Server` on a given port
+listen :: Server -> Int -> Effect Unit
+listen ( ServerM m ) p = do
+  s <- mkServer
+  m s
+  runFn2 _listen s p
