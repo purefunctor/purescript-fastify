@@ -3,129 +3,140 @@ module Node.Fastify.Server where
 import Prelude
 
 import Data.Function.Uncurried (Fn2, Fn4, runFn2, runFn4)
-import Data.Nullable (Nullable, notNull, null)
+import Data.Options (Option, Options(..), opt, options, (:=))
 import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
+import Foreign (Foreign)
 import Node.Fastify.Handler (Handler, runHandler)
 import Node.Fastify.Types (FastifyServer, HandlerFn, HttpMethod(..), Port)
 
--- | Represents options to be passed to the `https` field.
-type HttpsOptions =
-  { key :: String
-  , cert :: String
-  }
 
--- | Represents options to configure the `ajv` instance used by fastify.
-type AjvOptions =
-  { customOptions ::
-       { removeAdditional :: Boolean
-       , useDefaults :: Boolean
-       , coerceTypes :: Boolean
-       , allErrors :: Boolean
-       , nullable :: Boolean
-       }
-  , plugins :: Array AjvPlugin
-  }
+data HttpsOptions = HttpsOptions
 
-foreign import data AjvPlugin :: Type
+key :: Option HttpsOptions String
+key = opt "key"
 
--- | Represents default options for the `ajv` field.
-defaultAjvOptions :: AjvOptions
-defaultAjvOptions =
-  { customOptions:
-    { removeAdditional: true
-    , useDefaults: true
-    , coerceTypes: true
-    , allErrors: false
-    , nullable: true
-    }
-  , plugins: []
-  }
+cert :: Option HttpsOptions String
+cert = opt "cert"
 
--- | Represents options to be passed to the `fastify` server factory.
--- |
--- | NOTE: Record fields marked by TODO are either from foreign
--- | libraries or are unions of multiple types. There are no plans
--- | to support this currently.
--- |
--- | Reference: https://github.com/fastify/fastify/blob/v3.14.2/docs/Server.md
-type ServerOptions =
-  { http2 :: Boolean
-  , https :: Nullable HttpsOptions
-  , connectionTimeout :: Number
-  , keepAliveTimeout :: Number
-  , ignoreTrailingSlash :: Boolean
-  , maxParamLength :: Number
-  , bodyLimit :: Number
-  , onProtoPoisoning :: String
-  , onConstructorPoisoning :: String
-  , logger :: Boolean -- TODO
-  , disableRequestLogging :: Boolean
-  -- , serverFactory :: Unit -- TODO
-  , caseSensitive :: Boolean
-  , requestIdHeader :: String
-  , requestIdLogLabel :: String
-  -- , genReqId :: Unit -- TODO
-  , trustProxy :: Boolean -- TODO
-  , pluginTimeout :: Number
-  -- , querystringParser :: Unit
-  , exposeHeadRoutes :: Boolean
-  -- , constraints :: Unit -- TODO
-  , return503OnClosing :: Boolean
-  , ajv :: AjvOptions
-  , http2SessionTimeout :: Number
-  -- , frameworkErrors :: Unit -- TODO
-  -- , clientErrorHandler :: Unit -- TODO
-  -- , rewriteUrl :: Unit
-  }
+data AjvOptions = AvjOptions
 
--- | Provides default server options.
--- |
--- | NOTE: Record fields marked by TODO are either from foreign
--- | libraries or are unions of multiple types. There are no plans
--- | to support this currently.
--- |
--- | Reference: https://github.com/fastify/fastify/blob/v3.14.2/docs/Server.md
-defaultServerOptions :: ServerOptions
-defaultServerOptions =
-  { http2: false
-  , https: null
-  , connectionTimeout: 0.0
-  , keepAliveTimeout: 5.0
-  , ignoreTrailingSlash: false
-  , maxParamLength: 100.0
-  , bodyLimit: 1048576.0
-  , onProtoPoisoning: "error"
-  , onConstructorPoisoning: "ignore"
-  , logger: false
-  , disableRequestLogging: false
-  -- , serverFactory: unit
-  , caseSensitive: true
-  , requestIdHeader: "request-id"
-  , requestIdLogLabel: "reqId"
-  -- , genReqId: unit
-  , trustProxy: false
-  , pluginTimeout: 10000.0
-  -- , querystringParser: unit
-  , exposeHeadRoutes: false
-  -- , constraints: unit
-  , return503OnClosing: true
-  , ajv: defaultAjvOptions
-  , http2SessionTimeout: 5000.0
-  -- , frameworkErrors: unit
-  -- , clientErrorHandler: unit
-  -- , rewriteUrl: unit
-  }
+customOptions :: Option AjvOptions AjvCustomOptions
+customOptions = opt "customOptions"
 
-foreign import _mkServer :: ServerOptions -> Effect FastifyServer
+plugins :: Option AjvOptions ( Array Foreign )
+plugins = opt "plugins"
+
+data AjvCustomOptions = AjvCustomOptions
+
+removeAdditional :: Option AjvCustomOptions Boolean
+removeAdditional = opt "removeAdditional"
+
+useDefaults :: Option AjvCustomOptions Boolean
+useDefaults = opt "useDefaults"
+
+coerceTypes :: Option AjvCustomOptions Boolean
+coerceTypes = opt "coerceTypes"
+
+allErrors :: Option AjvCustomOptions Boolean
+allErrors = opt "allErrors"
+
+nullable :: Option AjvCustomOptions Boolean
+nullable = opt "nullable"
+
+data ServerOptions = ServerOptions
+
+http2 :: Option ServerOptions Boolean
+http2 = opt "http2"
+
+https :: Option ServerOptions Foreign
+https = opt "https"
+
+connectionTimeout :: Option ServerOptions Number
+connectionTimeout = opt "connectionTimeout"
+
+keepAliveTimeout :: Option ServerOptions Number
+keepAliveTimeout = opt "keepAliveTimeout"
+
+ignoreTrailingSlash :: Option ServerOptions Number
+ignoreTrailingSlash = opt "ignoreTrailingSlash"
+
+maxParamLength :: Option ServerOptions Number
+maxParamLength = opt "maxParamLength"
+
+bodyLimit :: Option ServerOptions Number
+bodyLimit = opt "bodyLimit"
+
+onProtoPoisoning :: Option ServerOptions String
+onProtoPoisoning = opt "onProtoPoisoning"
+
+onConstructorPoisoning :: Option ServerOptions String
+onConstructorPoisoning = opt "onConstructorPoisoning"
+
+logger :: Option ServerOptions Foreign
+logger = opt "logger"
+
+disableRequestLoggingq :: Option ServerOptions Boolean
+disableRequestLoggingq = opt "disableRequestLoggingq"
+
+serverFactory :: Option ServerOptions Foreign
+serverFactory = opt "serverFactory"
+
+caseSensitive :: Option ServerOptions Boolean
+caseSensitive = opt "caseSensitive"
+
+requestIdHeader :: Option ServerOptions String
+requestIdHeader = opt "requestIdHeader"
+
+requestIdLogLabel :: Option ServerOptions String
+requestIdLogLabel = opt "requestIdLogLabel"
+
+genReqId :: Option ServerOptions Foreign
+genReqId = opt "genReqId"
+
+trustProxy :: Option ServerOptions Foreign
+trustProxy = opt "trustProxy"
+
+pluginTimeout :: Option ServerOptions Number
+pluginTimeout = opt "pluginTimeout"
+
+querystringParser :: Option ServerOptions Foreign
+querystringParser = opt "querystringParser"
+
+exposeHeadRoutes :: Option ServerOptions Boolean
+exposeHeadRoutes = opt "exposeHeadRoutes"
+
+constraints :: Option ServerOptions Foreign
+constraints = opt "constraints"
+
+return503OnClosing :: Option ServerOptions Boolean
+return503OnClosing = opt "return503OnClosing"
+
+ajv :: Option ServerOptions Foreign
+ajv = opt "ajv"
+
+http2SessionTimeout :: Option ServerOptions Number
+http2SessionTimeout = opt "http2SessionTimeout"
+
+frameworkErrors :: Option ServerOptions Foreign
+frameworkErrors = opt "frameworkErrors"
+
+clientErrorHandler :: Option ServerOptions Foreign
+clientErrorHandler = opt "clientErrorHandler"
+
+rewriteUrl :: Option ServerOptions Foreign
+rewriteUrl = opt "rewriteUrl"
+
+foreign import _mkServer :: Foreign -> Effect FastifyServer
 
 -- | Creates a `FastifyServer` given `ServerOptions`.
-mkServerWithOptions :: ServerOptions -> Effect FastifyServer
-mkServerWithOptions = _mkServer
+mkServerWithOptions :: Options ServerOptions -> Effect FastifyServer
+mkServerWithOptions = _mkServer <<< options
 
--- | Creates a `FastifyServer` with `defaultServerOptions`.
+-- | Creates a `FastifyServer` with default options.
 mkServer :: Effect FastifyServer
-mkServer = mkServerWithOptions defaultServerOptions
+mkServer = mkServerWithOptions $ Options [ ]
+
 
 -- | Monad for operating on a `FastifyServer`.
 newtype ServerM r = ServerM (FastifyServer -> Effect r)
@@ -186,18 +197,18 @@ all = http ALL
 foreign import _listen :: Fn2 FastifyServer Int ( Effect Unit )
 
 -- | Runs a `Server` on a `Port` given `ServerOptions`.
-listenWithOptions :: ServerOptions -> Server -> Port -> Effect Unit
+listenWithOptions :: Options ServerOptions -> Server -> Port -> Effect Unit
 listenWithOptions options ( ServerM m ) port = do
   server <- mkServerWithOptions options
   m server
   runFn2 _listen server port
 
--- | Runs a `Server` on a `Port` using `defaultServerOptions`.
+-- | Runs a `Server` on a `Port` with default options.
 listen :: Server -> Port -> Effect Unit
-listen = listenWithOptions defaultServerOptions
+listen = listenWithOptions $ Options [ ]
 
 -- | Runs a `Server` on a `Port` with HTTPS given `HttpsOptions`.
-listenHttps :: HttpsOptions -> Server -> Port -> Effect Unit
-listenHttps https server port =
-  let options = defaultServerOptions { https = notNull https }
-   in listenWithOptions options server port
+listenHttps :: Options HttpsOptions -> Server -> Port -> Effect Unit
+listenHttps httpsOpt server port =
+  let serverOpt = https := (options httpsOpt)
+   in listenWithOptions serverOpt server port
